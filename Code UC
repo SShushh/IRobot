@@ -23,31 +23,29 @@ namespace Robots
     class IRobot
     {
         private ProximitySensor S1 = new ProximitySensor(123);
-        // pieliek objektu ProximitySensor ar parametru
         private ProximitySensor S2 = new ProximitySensor();
-        // pieliek objektu ProximitySensor bez parametra
-        private static string map; // izdrukas masīvs VIRZIENIEM: burti L,R,F
-        private static string alarm = ""; // robota STĀVOKLIS:teksts Green,Red
+        private static string map; // Izvedis masivs Virzieniem (L,R,F)
+        private static string alarm = ""; // Robota stāvoklis (Green, Red)
         private static string model;
         public int k = 0;
         public int left = 0;
         public int right = 0;
         public string model_name
         {
-            get { return model; } // atgriež konstuktora piesķitro vērtību
+            get { return model; }
         }
 
 
         public IRobot()
-        { // konstruktors bez parametra
-            Random rnd = new Random();  //robotam tiek piešķirts random nr
-            model = rnd.Next(1, 999).ToString();// noģenerē modeli
+        {
+            Random rnd = new Random();  // Robotam tiek piešķirts rnd num.
+            model = rnd.Next(1, 999).ToString();// Izveido modeli
         }
 
 
         public IRobot(string name)
-        { // konstruktors ar parametru
-            model = name; // piešķir modeli
+        {
+            model = name;
         }
 
 
@@ -69,20 +67,18 @@ namespace Robots
         {
             foreach (int g in telpa)
             {
-                int left = g / 10; //sadala divcipara skaitli
-                int right = g % 10; //sadala divcipara skaitli
+                int left = g / 10; // Sadala divcipara skaitli
+                int right = g % 10; // Sadala divcipara skaitli
                 S1.Scan(left);
                 S2.Scan(right);
                 if (S1.Scan(left) == "green" && S2.Scan(right) == "green")
-                {//ja abi skaitli nepaara
+                {
                     map += 'F';
                     k++;
                     PrintRobot();
                     S1.PrintSensor(S1.Scan(left));
                     S2.PrintSensor(S2.Scan(right));
                     Console.WriteLine("--------------------------------------------------------");
-
-
                 }
                 else if (S1.Scan(left) == "red" && S2.Scan(right) == "green")
                 {//ja kreisais skaitlis para
@@ -105,7 +101,6 @@ namespace Robots
                     S2.PrintSensor(S2.Scan(right));
                     Console.WriteLine("--------------------------------------------------------");
 
-
                     return;
                 }
                 else
@@ -118,18 +113,13 @@ namespace Robots
                     k++;
                     PrintRobot();
                     Console.WriteLine("--------------------------------------------------------");
-
-
                 }
-
-
             }
         }
 
-
         static void PrintRobot()
         {
-            Console.Write("Esmu robots: {0}, stavoklis {1}, map:{2}\n", model, alarm, map);// cikls pa virzienu masīvu
+            Console.Write("Esmu robots: {0}, stavoklis {1}, map:{2}\n", model, alarm, map);
         }
     }
 }
@@ -178,7 +168,7 @@ class ProximitySensor
     }
     public void PrintSensor(string state)
     {
-        Console.Write("Sensor numurs: {0} stavoklis {1}\n", serial_number, state); // izdrukā sensora stavokli un numuru
+        Console.Write("Sensor numurs: {0} stavoklis {1}\n", serial_number, state); // Izved sensora numuru un stāvokli
     }
 
 
@@ -191,6 +181,6 @@ class ProximitySensor
         else
         {
             return "red";
-        } // parbauda vai iegutais skaitlis ir PĀRA
+        } // Pārbauda vai iegūtais skaitlis ir pāra
     }
 }
