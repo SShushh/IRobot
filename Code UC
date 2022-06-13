@@ -1,0 +1,196 @@
+using System;
+namespace Robots
+{
+    public class Program
+    {
+        public static void Main()
+        {
+            int[] telpa1 = { 11, 17, 54, 47, 43, 84, 15, 84, 76, 93 }; // Masīvs 10 skaitli no 10 lidz 99
+            int[] telpa2 = { 19, 99, 37, 73, 55, 79, 51, 17, 33, 95 };  // Masīvs 10 skaitli no 10 lidz 99
+            IRobot Irobot1 = new IRobot();
+            Irobot1.SwitchOnOff(); // Robots ieslēdzas
+            Irobot1.Run(telpa1); // Robots darbojas
+            Irobot1.SwitchOnOff(); // Robotu izslēdz
+            Console.Write("\n\n\n");
+            IRobot Irobot2 = new IRobot("dddddd");
+            Irobot2.SwitchOnOff(); // Robots ieslēdzas
+            Irobot2.Run(telpa2); // Robots darbojas
+            Irobot2.SwitchOnOff(); // Robotu izslēdz
+        }
+    }
+
+
+    class IRobot
+    {
+        private ProximitySensor S1 = new ProximitySensor(123);
+        // pieliek objektu ProximitySensor ar parametru
+        private ProximitySensor S2 = new ProximitySensor();
+        // pieliek objektu ProximitySensor bez parametra
+        private static string map; // izdrukas masīvs VIRZIENIEM: burti L,R,F
+        private static string alarm = ""; // robota STĀVOKLIS:teksts Green,Red
+        private static string model;
+        public int k = 0;
+        public int left = 0;
+        public int right = 0;
+        public string model_name
+        {
+            get { return model; } // atgriež konstuktora piesķitro vērtību
+        }
+
+
+        public IRobot()
+        { // konstruktors bez parametra
+            Random rnd = new Random();  //robotam tiek piešķirts random nr
+            model = rnd.Next(1, 999).ToString();// noģenerē modeli
+        }
+
+
+        public IRobot(string name)
+        { // konstruktors ar parametru
+            model = name; // piešķir modeli
+        }
+
+
+        public void SwitchOnOff()
+        {
+            if (S1.state == "on")
+            {
+                S1.state = "off";
+            }
+            else
+            {
+                S1.state = "on";
+            }
+            S2.state = S1.state;
+        }
+
+
+        public void Run(int[] telpa)
+        {
+            foreach (int g in telpa)
+            {
+                int left = g / 10; //sadala divcipara skaitli
+                int right = g % 10; //sadala divcipara skaitli
+                S1.Scan(left);
+                S2.Scan(right);
+                if (S1.Scan(left) == "green" && S2.Scan(right) == "green")
+                {//ja abi skaitli nepaara
+                    map += 'F';
+                    k++;
+                    PrintRobot();
+                    S1.PrintSensor(S1.Scan(left));
+                    S2.PrintSensor(S2.Scan(right));
+                    Console.WriteLine("--------------------------------------------------------");
+
+
+                }
+                else if (S1.Scan(left) == "red" && S2.Scan(right) == "green")
+                {//ja kreisais skaitlis para
+                    Console.WriteLine("Kreisais sensors uztver šķērsli!");
+                    S1.PrintSensor(S1.Scan(left));
+                    S2.PrintSensor(S2.Scan(right));
+                    map += 'R';
+                    k++;
+                    PrintRobot();
+                    Console.WriteLine("--------------------------------------------------------");
+                }
+
+
+                else if (S1.Scan(left) == "red" && S2.Scan(right) == "red")
+                {//ja abi skaitli paara
+
+
+                    Console.WriteLine("Priekšā šķērslis!");
+                    S1.PrintSensor(S1.Scan(left));
+                    S2.PrintSensor(S2.Scan(right));
+                    Console.WriteLine("--------------------------------------------------------");
+
+
+                    return;
+                }
+                else
+                {//ja labais skaitlis para
+                    Console.WriteLine(S1.Scan(left) + "|" + S2.Scan(right));
+                    Console.WriteLine("Labais sensors uztver šķērsli!");
+                    S1.PrintSensor(S1.Scan(left));
+                    S2.PrintSensor(S1.Scan(right));
+                    map += 'L';
+                    k++;
+                    PrintRobot();
+                    Console.WriteLine("--------------------------------------------------------");
+
+
+                }
+
+
+            }
+        }
+
+
+        static void PrintRobot()
+        {
+            Console.Write("Esmu robots: {0}, stavoklis {1}, map:{2}\n", model, alarm, map);// cikls pa virzienu masīvu
+        }
+    }
+}
+
+
+class ProximitySensor
+{
+    private int serialnumber;
+    public int serial_number
+    {
+        get { return serialnumber; }
+    }
+    public ProximitySensor()
+    {
+        serialnumber = 123456789;
+    }
+    public ProximitySensor(int name)
+    {
+        serialnumber = name;
+    }
+    private int status = 0;
+    public string state
+    {
+        get
+        {
+            if (status == 1)
+            {
+                return "on";
+            }
+            else
+            {
+                return "off";
+            }
+        }
+        set
+        {
+            if (value.ToLower() == "on")
+            {
+                status = 1;
+            }
+            else
+            {
+                status = 0;
+            }
+        }
+    }
+    public void PrintSensor(string state)
+    {
+        Console.Write("Sensor numurs: {0} stavoklis {1}\n", serial_number, state); // izdrukā sensora stavokli un numuru
+    }
+
+
+    public string Scan(int value)
+    {
+        if (value % 2 == 1)
+        {
+            return "green";
+        }
+        else
+        {
+            return "red";
+        } // parbauda vai iegutais skaitlis ir PĀRA
+    }
+}
